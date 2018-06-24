@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>The Wall</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    h4, h5{
+        font-size: 130%;
+    }
+    p{
+        margin-left: 20px;
+    }
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 450px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 
+    }
+    .error{
+        color:red;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Eight Equal Equal Dee</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Log In</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Projects</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/logoff"><span class="glyphicon glyphicon-log-in"></span> Logoff</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+<div class="container-fluid text-center">    
+  <div class="row content">
+    <div class="col-sm-2 sidenav">
+        <p><a href="#">Amadon</a></p>
+        <p><a href="#">Courses</a></p>
+        <p><a href="#">TheWall</a></p>
+    </div>
+    <div class="col-sm-8 text-left"> 
+        <h1>Welcome to the Wall, {{request.session.first_name}}
+        </h1>
+        {% if request.session.success_msg %}
+        <ul>
+            {% for msg in request.session.success_msg %}
+            <li style="color: green">{{ msg }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <br>
+        <h2>Post a Message</h2>
+        <div class="message">
+            <form action="/newmessage" method="post">
+                {% csrf_token %}
+                What's on your mind?:<br>
+                <textarea name="newmessage" cols="100%" rows="8"></textarea><br>
+                <input type="submit" value="Post Message">
+            </form>
+        </div>
+        <div class="comments" style="margin-top: 50px">
+            {% for i in message %}
+            <h4>{{i.user_id.first_name}} Posted on {{ i.created_at }}</h4>
+            <h5>{{i.message}} 
+                <form style="display: inline-block" action="/delete" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="message_id" value="{{i.id}}">
+                    <input type="submit" value="Delete">
+                </h5>
+                </form>
+
+                {% for j in comment %}
+                    {% if j.comment_id_id == i.id %}
+                        <p> {{j.user_id.first_name}} Commented on {{j.created_at}}</p>
+                        <p>{{j.message}}
+                            <form style="display: inline-block" action="/deletem" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="comment_id" value="{{j.id}}">
+                                <input type="submit" value="Delete"></p>
+                        
+                    {% endif %}
+                {% endfor %}
+
+            <form action="/comment" method="post">
+                {% csrf_token %}
+                Leave a Comment:<br>
+                <textarea name="comment" cols="50%" rows="2"></textarea><br>
+                <input type="submit" value="Comment">
+                <input type="hidden" name="msg_id" value="{{i.id}}">
+            </form>
+            {% endfor %}
+
+        </div>
+
+
+        
+    </div>
+    <div class="col-sm-2 sidenav">
+    </div>
+  </div>
+</div>
+<footer class="container-fluid text-center">
+  <p></p>
+</footer>
+</body>
+</html>
